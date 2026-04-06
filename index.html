@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soeung Sreypich | គណិតវិទ្យា</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Khmer:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                        'khmer': ['Noto Sans Khmer', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        math: {
+                            50: '#f0f4ff',
+                            100: '#dbe4ff',
+                            200: '#bac8ff',
+                            300: '#91a7ff',
+                            400: '#748ffc',
+                            500: '#5c7cfa',
+                            600: '#4c6ef5',
+                            700: '#4263eb',
+                            800: '#3b5bdb',
+                            900: '#364fc7',
+                            950: '#1a237e',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Noto Sans Khmer', sans-serif;
+            overflow-x: hidden;
+        }
+
+        body.khmer-mode {
+            font-family: 'Noto Sans Khmer', 'Inter', sans-serif;
+        }
+
+        /* Math Grid Background */
+        #math-grid-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Floating Math Symbols */
+        .math-symbol {
+            position: fixed;
+            color: rgba(66, 99, 235, 0.08);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatSymbol linear infinite;
+        }
+
+        @keyframes floatSymbol {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Glow Effects */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(66, 99, 235, 0.5), 0 0 40px rgba(66, 99, 235, 0.3);
+        }
+
+        .glow-box {
+            box-shadow: 0 0 20px rgba(66, 99, 235, 0.15), 0 0 60px rgba(66, 99, 235, 0.05);
+        }
+
+        /* Animated Gradient Border */
+        .gradient-border {
+            position: relative;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 1rem;
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 1rem;
+            padding: 2px;
+            background: linear-gradient(135deg, #4263eb, #f59e0b, #4263eb, #f59e0b);
+            background-size: 300% 300%;
+            animation: gradientShift 4s ease infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Card Hover Effects */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(66, 99, 235, 0.2);
+        }
+
+        /* Scroll Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Math Grid Pattern */
+        .math-grid-bg {
+            background-image:
+                linear-gradient(rgba(66, 99, 235, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(66, 99, 235, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Typing Cursor */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+            color: #4263eb;
+            font-weight: 300;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Skill Bar Animation */
+        .skill-fill {
+            width: 0%;
+            transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .skill-fill.active {
+            width: var(--skill-width);
+        }
+
+        /* Pulse Ring */
+        .pulse-ring {
+            position: relative;
+        }
+
+        .pulse-ring::before,
+        .pulse-ring::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(66, 99, 235, 0.4);
+            animation: pulseRing 2s ease-out infinite;
+        }
+
+        .pulse-ring::after {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes pulseRing {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* Nav Link Underline */
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4263eb, #f59e0b);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #4263eb, #f59e0b);
+            border-radius: 4px;
+        }
+
+        /* Equation Ticker */
+        .equation-ticker {
+            animation: tickerScroll 30s linear infinite;
+        }
+
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Particle effect on buttons */
+        .btn-particle {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-particle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            transition: all 0.5s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn-particle:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Counter Animation */
+        .counter {
+            display: inline-block;
+        }
+
+        /* Language transition */
+        [data-lang] {
+            transition: opacity 0.3s ease;
+        }
+
+        .lang-fade {
+            opacity: 0;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(66, 99, 235, 0.3);
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        /* Section divider */
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(66, 99, 235, 0.3), rgba(245, 158, 11, 0.3), transparent);
+        }
+
+        /* Math formula hover effect */
+        .formula-card {
+            background: linear-gradient(135deg, rgba(66, 99, 235, 0.05), rgba(245, 158, 11, 0.05));
+            transition: all 0.3s ease;
+        }
+
+        .formula-card:hover {
+            background: linear-gradient(135deg, rgba(66, 99, 235, 0.15), rgba(245, 158, 11, 0.1));
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-white font-inter">
+
+    <!-- Math Grid Canvas Background -->
+    <canvas id="math-grid-canvas"></canvas>
+
+    <!-- Floating Math Symbols -->
+    <div id="floating-symbols"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 lg:h-20">
+                <!-- Logo -->
+                <a href="#home" class="flex items-center space-x-2 group">
+                    <div class="w-10 h-10 bg-gradient-to-br from-math-600 to-gold-500 rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
+                        <span class="text-white font-bold text-lg">π</span>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-math-400 to-gold-400 bg-clip-text text-transparent" data-en="SREYPICH MATH" data-kh="SREYPICH MATH">SREYPICH MATH</span>
+                </a>
+
+                <!-- Desktop Nav -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-sm font-medium text-slate-300 hover:text-white transition-colors" data-en="Home" data-kh="ទំព័រដើម">Home</a>
+                    <a href="#about" class="nav-link text-sm font-medium text-slate-300 hover:text-white transition-colors" data-en="About" data-kh="អំពីខ្ញុំ">About</a>
+                    <a href="#skills" class="nav-link text-sm font-medium text-slate-300 hover:text-white transition-colors" data-en="Skills" data-kh="ជំនាញ">Skills</a>
+                    <a href="#courses" class="nav-link text-sm font-medium text-slate-300 hover:text-white transition-colors" data-en="Courses" data-kh="វគ្គសិក្សា">Courses</a>
+                    <a href="#achievements" class="nav-link text-sm font-medium text-slate-300 hover:text-white transition-colors" data-en="Achievements" data-kh="សមិទ្ធផល">Achievements</a>
+                    <a href="#testimonials" class="nav-link text-sm font-medium text-slate-300 hover:text-white transition-colors" data-en="Reviews" data-kh="មតិ">Reviews</a>
+                    <a href="#contact" class="nav-link text-sm font-medium text-slate-300 hover:text-white transition-colors" data-en="Contact" data-kh="ទំនាក់ទំនង">Contact</a>
+                </div>
+
+                <!-- Right Side -->
+                <div class="flex items-center space-x-4">
+                    <!-- Language Toggle -->
+                    <button id="lang-toggle" class="flex items-center space-x-2 bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-full px-4 py-2 text-sm hover:border-math-500 transition-all duration-300 group">
+                        <i class="fas fa-globe text-math-400 group-hover:rotate-180 transition-transform duration-500"></i>
+                        <span id="current-lang" class="font-mono text-xs text-math-300">EN</span>
+                        <div class="w-8 h-4 bg-slate-700 rounded-full relative transition-colors duration-300 group-hover:bg-math-600">
+                            <div id="lang-dot" class="w-3 h-3 bg-gold-400 rounded-full absolute top-0.5 left-0.5 transition-all duration-300"></div>
+                        </div>
+                    </button>
+
+                    <!-- CTA Button -->
+                    <a href="#contact" class="hidden md:inline-flex btn-particle bg-gradient-to-r from-math-600 to-math-500 hover:from-math-500 hover:to-gold-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 shadow-lg shadow-math-600/25 hover:shadow-math-500/40" data-en="Hire Me" data-kh="ជួលខ្ញុំ">Hire Me</a>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="lg:hidden w-10 h-10 flex items-center justify-center text-slate-300 hover:text-white transition-colors">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed top-0 right-0 w-72 h-full bg-slate-900/95 backdrop-blur-xl z-50 border-l border-slate-800">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-10">
+                <span class="text-lg font-bold text-white">Menu</span>
+                <button id="mobile-menu-close" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="space-y-1">
+                <a href="#home" class="mobile-nav-link block px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all" data-en="Home" data-kh="ទំព័រដើម">Home</a>
+                <a href="#about" class="mobile-nav-link block px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all" data-en="About" data-kh="អំពីខ្ញុំ">About</a>
+                <a href="#skills" class="mobile-nav-link block px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all" data-en="Skills" data-kh="ជំនាញ">Skills</a>
+                <a href="#courses" class="mobile-nav-link block px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all" data-en="Courses" data-kh="វគ្គសិក្សា">Courses</a>
+                <a href="#achievements" class="mobile-nav-link block px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all" data-en="Achievements" data-kh="សមិទ្ធផល">Achievements</a>
+                <a href="#testimonials" class="mobile-nav-link block px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all" data-en="Reviews" data-kh="មតិ">Reviews</a>
+                <a href="#contact" class="mobile-nav-link block px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all" data-en="Contact" data-kh="ទំនាក់ទំនង">Contact</a>
+            </div>
+            <div class="mt-8 pt-8 border-t border-slate-800">
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 hover:text-math-400 hover:bg-slate-700 transition-all"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 hover:text-math-400 hover:bg-slate-700 transition-all"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 hover:text-math-400 hover:bg-slate-700 transition-all"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 math-grid-bg opacity-30"></div>
+
+        <!-- Decorative Elements -->
+        <div class="absolute top-20 left-10 text-math-500/10 text-9xl font-mono animate-pulse">∑</div>
+        <div class="absolute bottom-20 right-10 text-gold-500/10 text-9xl font-mono animate-pulse" style="animation-delay: 1s;">∫</div>
+        <div class="absolute top-1/3 right-1/4 text-math-400/5 text-8xl font-mono">π</div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <!-- Badge -->
+            <div class="reveal inline-flex items-center space-x-2 bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-full px-5 py-2 mb-8">
+                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                <span class="text-sm text-slate-300" data-en="Available for Online & In-Person Teaching" data-kh="មានសម្រាប់ការបង្រៀនតាមអ៊ីនធឺណិត និងផ្ទាល់">Available for Online & In-Person Teaching</span>
+            </div>
+
+            <!-- Main Heading -->
+            <h1 class="reveal text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-6" style="transition-delay: 0.1s;">
+                <span class="block text-white" data-en="Master Mathematics" data-kh="ចេះគណិតវិទ្យា">Master Mathematics</span>
+                <span class="block bg-gradient-to-r from-math-400 via-gold-400 to-math-400 bg-clip-text text-transparent" data-en="With Confidence" data-kh="ដោយទំនុកចិត្ត">With Confidence</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="reveal text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed" style="transition-delay: 0.2s;" data-en="Transform your math journey from confusion to clarity. Expert instruction in Algebra, Calculus, Geometry, and more — tailored for every learning style." data-kh="ផ្លាស់ប្តូរដំណើរគណិតវិទ្យារបស់អ្នកពីការច្រឡំទៅជាភាពច្បាស់លាស់។ ការបង្រៀនជំនាញក្នុង ពិជគណិត គណិតវិទ្យា ធរណីមាត្រ និងច្រើនទៀត — សម្រាប់រចនាប័ទ្មរៀនសូត្រគ្រប់ប្រភេទ។">
+                Transform your math journey from confusion to clarity. Expert instruction in Algebra, Calculus, Geometry, and more — tailored for every learning style.
+            </p>
+
+            <!-- Typing Effect -->
+            <div class="reveal mb-10" style="transition-delay: 0.3s;">
+                <span class="text-slate-500 text-sm font-mono">
+                    <span data-en="Specializing in: " data-kh="ជំនាញក្នុង: ">Specializing in: </span>
+                    <span id="typing-text" class="text-math-400 typing-cursor font-semibold"></span>
+                </span>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-4 mb-16" style="transition-delay: 0.4s;">
+                <a href="#courses" class="btn-particle group bg-gradient-to-r from-math-600 to-math-500 hover:from-math-500 hover:to-math-400 text-white px-8 py-4 rounded-full text-base font-semibold transition-all duration-300 shadow-xl shadow-math-600/30 hover:shadow-math-500/50 flex items-center space-x-2">
+                    <span data-en="Explore Courses" data-kh="ស្វែងរកវគ្គសិក្សា">Explore Courses</span>
+                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                <a href="#contact" class="btn-particle group bg-slate-800/80 backdrop-blur-sm border border-slate-700 hover:border-math-500 text-white px-8 py-4 rounded-full text-base font-semibold transition-all duration-300 flex items-center space-x-2">
+                    <i class="fas fa-play-circle text-gold-400 group-hover:scale-110 transition-transform"></i>
+                    <span data-en="Watch Demo" data-kh="មើលការបង្ហាញ">Watch Demo</span>
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto" style="transition-delay: 0.5s;">
+                <div class="text-center p-4">
+                    <div class="text-3xl md:text-4xl font-black text-white mb-1">
+                        <span class="counter" data-target="2">0</span>+
+                    </div>
+                    <div class="text-sm text-slate-500" data-en="Years Experience" data-kh="ឆ្នាំបទពិសោធន៍">Years Experience</div>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-3xl md:text-4xl font-black text-white mb-1">
+                        <span class="counter" data-target="20">0</span>+
+                    </div>
+                    <div class="text-sm text-slate-500" data-en="Students Taught" data-kh="សិស្សបានបង្រៀន">Students Taught</div>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-3xl md:text-4xl font-black text-white mb-1">
+                        <span class="counter" data-target="98">0</span>%
+                    </div>
+                    <div class="text-sm text-slate-500" data-en="Pass Rate" data-kh="អត្រាជាប់">Pass Rate</div>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-3xl md:text-4xl font-black text-white mb-1">
+                        <span class="counter" data-target="15">0</span>+
+                    </div>
+                    <div class="text-sm text-slate-500" data-en="Awards Won" data-kh="ពានរង្វាន់">Awards Won</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#about" class="text-slate-500 hover:text-math-400 transition-colors">
+                <i class="fas fa-chevron-down text-xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Equation Ticker -->
+    <div class="relative overflow-hidden bg-slate-900/50 border-y border-slate-800/50 py-4">
+        <div class="equation-ticker flex space-x-12 whitespace-nowrap">
+            <span class="text-slate-600 font-mono text-lg">E = mc²</span>
+            <span class="text-slate-600 font-mono text-lg">∫f(x)dx = F(x) + C</span>
+            <span class="text-slate-600 font-mono text-lg">a² + b² = c²</span>
+            <span class="text-slate-600 font-mono text-lg">lim(x→∞) f(x) = L</span>
+            <span class="text-slate-600 font-mono text-lg">∑(n=1 to ∞) 1/n² = π²/6</span>
+            <span class="text-slate-600 font-mono text-lg">d/dx[sin(x)] = cos(x)</span>
+            <span class="text-slate-600 font-mono text-lg">∇ × F = 0</span>
+            <span class="text-slate-600 font-mono text-lg">x = (-b ± √(b²-4ac)) / 2a</span>
+            <!-- Duplicate for seamless loop -->
+            <span class="text-slate-600 font-mono text-lg">E = mc²</span>
+            <span class="text-slate-600 font-mono text-lg">∫f(x)dx = F(x) + C</span>
+            <span class="text-slate-600 font-mono text-lg">a² + b² = c²</span>
+            <span class="text-slate-600 font-mono text-lg">lim(x→∞) f(x) = L</span>
+            <span class="text-slate-600 font-mono text-lg">∑(n=1 to ∞) 1/n² = π²/6</span>
+            <span class="text-slate-600 font-mono text-lg">d/dx[sin(x)] = cos(x)</span>
+            <span class="text-slate-600 font-mono text-lg">∇ × F = 0</span>
+            <span class="text-slate-600 font-mono text-lg">x = (-b ± √(b²-4ac)) / 2a</span>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="relative py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <!-- Image Side -->
+                <div class="reveal-left relative">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-br from-math-600/20 to-gold-500/20 rounded-2xl blur-3xl"></div>
+                        <div class="relative gradient-border p-1">
+                            <div class="bg-slate-900 rounded-2xl overflow-hidden">
+                                <div class="aspect-[4/5] bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center relative overflow-hidden">
+                                    <!-- Placeholder Teacher Image -->
+                                    <div class="text-center">
+                                        <div class="w-32 h-32 mx-auto bg-gradient-to-br from-math-600 to-gold-500 rounded-full flex items-center justify-center mb-6 pulse-ring">
+                                            <i class="fas fa-chalkboard-teacher text-5xl text-white"></i>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div class="text-white font-bold text-2xl" data-en="Ms. SREYPICH" data-kh="អ្នកគ្រូ សឿង​ ស្រីពេជ្រ">Ms. SREYPICH</div>
+                                            <div class="text-math-400 font-mono text-sm">B.Sc. Mathematics</div>
+                                        </div>
+                                    </div>
+                                    <!-- Floating Math Decorations -->
+                                    <div class="absolute top-4 left-4 text-math-500/20 text-4xl font-mono">∑</div>
+                                    <div class="absolute bottom-4 right-4 text-gold-500/20 text-4xl font-mono">π</div>
+                                    <div class="absolute top-1/2 right-4 text-math-400/10 text-6xl font-mono">∫</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Experience Badge -->
+                    <div class="absolute -bottom-4 -right-4 bg-gradient-to-br from-math-600 to-math-700 text-white p-4 rounded-xl shadow-xl shadow-math-600/30">
+                        <div class="text-3xl font-black">2+</div>
+                        <div class="text-xs text-math-200" data-en="Years" data-kh="ឆ្នាំ">Years</div>
+                    </div>
+                </div>
+
+                <!-- Content Side -->
+                <div class="reveal-right">
+                    <div class="inline-flex items-center space-x-2 bg-math-500/10 border border-math-500/20 rounded-full px-4 py-1.5 mb-6">
+                        <i class="fas fa-user-graduate text-math-400 text-sm"></i>
+                        <span class="text-sm font-semibold text-math-400" data-en="About Me" data-kh="អំពីខ្ញុំ">About Me</span>
+                    </div>
+
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-6 leading-tight">
+                        <span data-en="Passionate About Making Math" data-kh="ចូលចិត្តធ្វើឱ្យគណិតវិទ្យា">Passionate About Making Math</span>
+                        <span class="bg-gradient-to-r from-math-400 to-gold-400 bg-clip-text text-transparent block" data-en="Simple & Enjoyable" data-kh="ងាយស្រួល និងរីករាយ">Simple & Enjoyable</span>
+                    </h2>
+
+                    <p class="text-slate-400 text-lg leading-relaxed mb-6" data-en="I'm Sophea, a dedicated mathematics educator with over 2 years of experience transforming how students perceive and understand mathematics. My teaching philosophy centers on building strong foundations while fostering critical thinking skills." data-kh="ខ្ញុំឈ្មោះសុភា ជាគ្រូបង្រៀនគណិតវិទ្យាដែលមានបទពិសោធន៍ជាង ២ ឆ្នាំក្នុងការផ្លាស់ប្តូររបៀបដែលសិស្សយល់ និងចេះគណិតវិទ្យា។ ទស្សនវិជ្ជាបង្រៀនរបស់ខ្ញុំផ្តោតលើការកសាងមូលដ្ឋានគ្រឹះរឹងមាំ ខណៈពេលដែលលើកកម្ពស់ជំនាញគិតវិភាគ។">
+                        I'm Sophea, a dedicated mathematics educator with over 2 years of experience transforming how students perceive and understand mathematics. My teaching philosophy centers on building strong foundations while fostering critical thinking skills.
+                    </p>
+
+                    <p class="text-slate-400 leading-relaxed mb-8" data-en="With a Bachelor's degree in Mathematics from the Royal University of Phnom Penh, I've developed innovative teaching methods that combine traditional problem-solving with modern technology, making complex concepts accessible to all learners." data-kh="ជាមួយនឹងសញ្ញាបត្របរិញ្ញាបត្រគណិតវិទ្យាពីសាកលវិទ្យាល័យភូមិន្ទភ្នំពេញ ខ្ញុំបានអភិវឌ្ឍវិធីសាស្រ្តបង្រៀនច្នៃប្រឌិតដែលបញ្ចូលការដោះស្រាយបញ្ហាបែបប្រពៃណីជាមួយបច្ចេកវិទ្យាទំនើប ធ្វើឱ្យគំនិតស្មុគស្មាញអាចចូលប្រើបានសម្រាប់អ្នករៀនទាំងអស់។">
+                        With a Bachelor's degree in Mathematics from the Royal University of Phnom Penh, I've developed innovative teaching methods that combine traditional problem-solving with modern technology, making complex concepts accessible to all learners.
+                    </p>
+
+                    <!-- Info Grid -->
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg">
+                            <i class="fas fa-graduation-cap text-math-400"></i>
+                            <div>
+                                <div class="text-xs text-slate-500" data-en="Degree" data-kh="កម្រិតសញ្ញាបត្រ">Degree</div>
+                                <div class="text-sm font-semibold text-white" data-en="B.Sc. Math" data-kh="បរិញ្ញាបត្រគណិតវិទ្យា">B.Sc. Math</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg">
+                            <i class="fas fa-map-marker-alt text-gold-400"></i>
+                            <div>
+                                <div class="text-xs text-slate-500" data-en="Location" data-kh="ទីតាំង">Location</div>
+                                <div class="text-sm font-semibold text-white">Phnom Penh, KH</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg">
+                            <i class="fas fa-language text-math-400"></i>
+                            <div>
+                                <div class="text-xs text-slate-500" data-en="Languages" data-kh="ភាសា">Languages</div>
+                                <div class="text-sm font-semibold text-white" data-en="Khmer, English" data-kh="ខ្មែរ, អង់គ្លេស">Khmer, English</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg">
+                            <i class="fas fa-certificate text-gold-400"></i>
+                            <div>
+                                <div class="text-xs text-slate-500" data-en="Certified" data-kh="វិញ្ញាបនបត្រ">Certified</div>
+                                <div class="text-sm font-semibold text-white" data-en="MOEYS Approved" data-kh="អនុម័តដោយក្រសួង">MOEYS Approved</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#contact" class="btn-particle inline-flex items-center space-x-2 bg-gradient-to-r from-math-600 to-math-500 hover:from-math-500 hover:to-gold-500 text-white px-8 py-3.5 rounded-full font-semibold transition-all duration-300 shadow-lg shadow-math-600/25">
+                        <i class="fas fa-envelope"></i>
+                        <span data-en="Get In Touch" data-kh="ទាក់ទងមកខ្ញុំ">Get In Touch</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-4xl mx-auto"></div>
+
+    <!-- Skills Section -->
+    <section id="skills" class="relative py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <div class="reveal inline-flex items-center space-x-2 bg-math-500/10 border border-math-500/20 rounded-full px-4 py-1.5 mb-6">
+                    <i class="fas fa-brain text-math-400 text-sm"></i>
+                    <span class="text-sm font-semibold text-math-400" data-en="My Expertise" data-kh="ជំនាញរបស់ខ្ញុំ">My Expertise</span>
+                </div>
+                <h2 class="reveal text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4" style="transition-delay: 0.1s;">
+                    <span data-en="Mathematical " data-kh="គណិតវិទ្យា ">Mathematical </span>
+                    <span class="bg-gradient-to-r from-math-400 to-gold-400 bg-clip-text text-transparent" data-en="Mastery" data-kh="ជំនាញ">Mastery</span>
+                </h2>
+                <p class="reveal text-slate-400 max-w-2xl mx-auto text-lg" style="transition-delay: 0.2s;" data-en="Comprehensive expertise across all major mathematical disciplines, from foundational arithmetic to advanced calculus." data-kh="ជំនាញទូលំទូលាយក្នុងវិស័យគណិតវិទ្យាសំខាន់ៗទាំងអស់ ចាប់ពីគណិតវិទ្យាមូលដ្ឋានរហូតដល់គណិតវិទ្យាកម្រិតខ្ពស់។">
+                    Comprehensive expertise across all major mathematical disciplines, from foundational arithmetic to advanced calculus.
+                </p>
+            </div>
+
+            <!-- Skills Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Skill Card 1 -->
+                <div class="reveal card-hover gradient-border p-6 group">
+                    <div class="bg-slate-900 rounded-xl p-6 h-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl font-mono text-blue-400">∑</span>
+                            </div>
+                            <span class="text-xs font-mono text-blue-400 bg-blue-500/10 px-2 py-1 rounded">95%</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2" data-en="Algebra & Number Theory" data-kh="ពិជគណិត និងទ្រឹស្ដីលេខ">Algebra & Number Theory</h3>
+                        <p class="text-sm text-slate-400 mb-4" data-en="Linear equations, polynomials, matrices, abstract algebra, and number theory fundamentals." data-kh="សមីការលីនេអ៊ែរ ពហុធា ម៉ាទ្រីស ពិជគណិតសារធាតុ និងមូលដ្ឋានទ្រឹស្ដីលេខ។">Linear equations, polynomials, matrices, abstract algebra, and number theory fundamentals.</p>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="skill-fill bg-gradient-to-r from-blue-500 to-blue-400 h-2 rounded-full" style="--skill-width: 95%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 2 -->
+                <div class="reveal card-hover gradient-border p-6 group" style="transition-delay: 0.1s;">
+                    <div class="bg-slate-900 rounded-xl p-6 h-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl font-mono text-purple-400">∫</span>
+                            </div>
+                            <span class="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-1 rounded">98%</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2" data-en="Calculus & Analysis" data-kh="គណិតវិទ្យា និងការវិភាគ">Calculus & Analysis</h3>
+                        <p class="text-sm text-slate-400 mb-4" data-en="Differential & integral calculus, multivariable calculus, differential equations, and real analysis." data-kh="គណិតវិទ្យាឌីផេរ៉ង់ស្យែល និងអាំងតេក្រាល គណិតវិទ្យាពហុអថេរ សមីការឌីផេរ៉ង់ស្យែល និងការវិភាគពិត។">Differential & integral calculus, multivariable calculus, differential equations, and real analysis.</p>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="skill-fill bg-gradient-to-r from-purple-500 to-purple-400 h-2 rounded-full" style="--skill-width: 98%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 3 -->
+                <div class="reveal card-hover gradient-border p-6 group" style="transition-delay: 0.2s;">
+                    <div class="bg-slate-900 rounded-xl p-6 h-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl font-mono text-emerald-400">△</span>
+                            </div>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">92%</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2" data-en="Geometry & Trigonometry" data-kh="ធរណីមាត្រ និងត្រីកោណមាត្រ">Geometry & Trigonometry</h3>
+                        <p class="text-sm text-slate-400 mb-4" data-en="Euclidean geometry, analytic geometry, trigonometric functions, and spatial reasoning." data-kh="ធរណីមាត្រអឺគ្លីដ ធរណីមាត្រវិភាគ អនុគមន៍ត្រីកោណមាត្រ និងការយល់ដឹងលំហ។">Euclidean geometry, analytic geometry, trigonometric functions, and spatial reasoning.</p>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="skill-fill bg-gradient-to-r from-emerald-500 to-emerald-400 h-2 rounded-full" style="--skill-width: 92%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 4 -->
+                <div class="reveal card-hover gradient-border p-6 group" style="transition-delay: 0.3s;">
+                    <div class="bg-slate-900 rounded-xl p-6 h-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl font-mono text-orange-400">σ</span>
+                            </div>
+                            <span class="text-xs font-mono text-orange-400 bg-orange-500/10 px-2 py-1 rounded">90%</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2" data-en="Statistics & Probability" data-kh="ស្ថិតិ និងប្រូបាប">Statistics & Probability</h3>
+                        <p class="text-sm text-slate-400 mb-4" data-en="Descriptive statistics, probability distributions, hypothesis testing, and data analysis." data-kh="ស្ថិតិពិពណ៌នា ការចែកចាយប្រូបាប ការធ្វើតេស្តសម្មតិកម្ម និងការវិភាគទិន្នន័យ។">Descriptive statistics, probability distributions, hypothesis testing, and data analysis.</p>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="skill-fill bg-gradient-to-r from-orange-500 to-orange-400 h-2 rounded-full" style="--skill-width: 90%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 5 -->
+                <div class="reveal card-hover gradient-border p-6 group" style="transition-delay: 0.4s;">
+                    <div class="bg-slate-900 rounded-xl p-6 h-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-pink-500/20 to-pink-600/20 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl font-mono text-pink-400">∞</span>
+                            </div>
+                            <span class="text-xs font-mono text-pink-400 bg-pink-500/10 px-2 py-1 rounded">88%</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2" data-en="Discrete Mathematics" data-kh="គណិតវិទ្យាដាច់ដោយឡែក">Discrete Mathematics</h3>
+                        <p class="text-sm text-slate-400 mb-4" data-en="Combinatorics, graph theory, logic, set theory, and algorithmic thinking." data-kh="កុំប៊ីនាទ័រ ទ្រឹស្ដីក្រាហ្វ តក្កវិទ្យា ទ្រឹស្ដីសំណុំ និងការគិតអាល់កូរីត។">Combinatorics, graph theory, logic, set theory, and algorithmic thinking.</p>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="skill-fill bg-gradient-to-r from-pink-500 to-pink-400 h-2 rounded-full" style="--skill-width: 88%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 6 -->
+                <div class="reveal card-hover gradient-border p-6 group" style="transition-delay: 0.5s;">
+                    <div class="bg-slate-900 rounded-xl p-6 h-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 rounded-xl flex items-center justify-center">
+                                <span class="text-2xl font-mono text-cyan-400">💻</span>
+                            </div>
+                            <span class="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded">85%</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2" data-en="Math Technology" data-kh="បច្ចេកវិទ្យាគណិត">Math Technology</h3>
+                        <p class="text-sm text-slate-400 mb-4" data-en="GeoGebra, Desmos, MATLAB, Python, LaTeX, and interactive learning platforms." data-kh="GeoGebra, Desmos, MATLAB, Python, LaTeX និងវេទិការៀនសូត្រអន្តរកម្ម។">GeoGebra, Desmos, MATLAB, Python, LaTeX, and interactive learning platforms.</p>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="skill-fill bg-gradient-to-r from-cyan-500 to-cyan-400 h-2 rounded-full" style="--skill-width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-4xl mx-auto"></div>
+
+    <!-- Courses Section -->
+    <section id="courses" class="relative py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <div class="reveal inline-flex items-center space-x-2 bg-gold-500/10 border border-gold-500/20 rounded-full px-4 py-1.5 mb-6">
+                    <i class="fas fa-book-open text-gold-400 text-sm"></i>
+                    <span class="text-sm font-semibold text-gold-400" data-en="What I Teach" data-kh="អ្វីដែលខ្ញុំបង្រៀន">What I Teach</span>
+                </div>
+                <h2 class="reveal text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4" style="transition-delay: 0.1s;">
+                    <span data-en="Featured " data-kh="វគ្គសិក្សា ">Featured </span>
+                    <span class="bg-gradient-to-r from-gold-400 to-math-400 bg-clip-text text-transparent" data-en="Courses" data-kh="ពិសេស">Courses</span>
+                </h2>
+                <p class="reveal text-slate-400 max-w-2xl mx-auto text-lg" style="transition-delay: 0.2s;" data-en="Structured courses designed for success at every level, from grade 7 to university preparation." data-kh="វគ្គសិក្សារៀបចំសម្រាប់ជោគជ័យគ្រប់កម្រិត ចាប់ពីថ្នាក់ទី៧ រហូតដល់ការត្រៀមចូលសាកលវិទ្យាល័យ។">
+                    Structured courses designed for success at every level, from grade 7 to university preparation.
+                </p>
+            </div>
+
+            <!-- Course Cards -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Course 1 -->
+                <div class="reveal card-hover gradient-border group">
+                    <div class="bg-slate-900 rounded-xl overflow-hidden">
+                        <div class="relative h-48 bg-gradient-to-br from-blue-600/30 to-blue-800/30 flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 math-grid-bg opacity-20"></div>
+                            <span class="text-6xl font-mono text-blue-400/30 relative z-10">∑</span>
+                            <div class="absolute top-4 right-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full" data-en="Popular" data-kh="ពេញនិយម">Popular</div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <span class="text-xs bg-blue-500/10 text-blue-400 px-2 py-1 rounded font-mono">Grade 7-9</span>
+                                <span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded">6 months</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2" data-en="Foundation Mathematics" data-kh="គណិតវិទ្យាមូលដ្ឋាន">Foundation Mathematics</h3>
+                            <p class="text-sm text-slate-400 mb-4" data-en="Build strong fundamentals in arithmetic, basic algebra, and introductory geometry with interactive lessons." data-kh="កសាងមូលដ្ឋានគ្រឹះរឹងមាំក្នុងគណិត ពិជគណិតមូលដ្ឋាន និងធរណីមាត្របឋមជាមួយមេរៀនអន្តរកម្ម។">Build strong fundamentals in arithmetic, basic algebra, and introductory geometry with interactive lessons.</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-star text-gold-400 text-sm"></i>
+                                    <span class="text-sm text-white font-semibold">4.9</span>
+                                    <span class="text-xs text-slate-500">(324)</span>
+                                </div>
+                                <span class="text-lg font-bold text-gold-400">$49<span class="text-xs text-slate-500 font-normal">/mo</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 2 -->
+                <div class="reveal card-hover gradient-border group" style="transition-delay: 0.1s;">
+                    <div class="bg-slate-900 rounded-xl overflow-hidden">
+                        <div class="relative h-48 bg-gradient-to-br from-purple-600/30 to-purple-800/30 flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 math-grid-bg opacity-20"></div>
+                            <span class="text-6xl font-mono text-purple-400/30 relative z-10">∫</span>
+                            <div class="absolute top-4 right-4 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full" data-en="Advanced" data-kh="កម្រិតខ្ពស់">Advanced</div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <span class="text-xs bg-purple-500/10 text-purple-400 px-2 py-1 rounded font-mono">Grade 10-12</span>
+                                <span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded">8 months</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2" data-en="Advanced Calculus & Analysis" data-kh="គណិតវិទ្យា និងការវិភាគកម្រិតខ្ពស់">Advanced Calculus & Analysis</h3>
+                            <p class="text-sm text-slate-400 mb-4" data-en="Master derivatives, integrals, limits, and differential equations with step-by-step guided problem solving." data-kh="ចេះដើរីវេ អាំងតេក្រាល ដែនកំណត់ និងសមីការឌីផេរ៉ង់ស្យែលជាមួយការដោះស្រាយបញ្ហាណែនាំមួយជំហានម្តងៗ។">Master derivatives, integrals, limits, and differential equations with step-by-step guided problem solving.</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-star text-gold-400 text-sm"></i>
+                                    <span class="text-sm text-white font-semibold">4.8</span>
+                                    <span class="text-xs text-slate-500">(256)</span>
+                                </div>
+                                <span class="text-lg font-bold text-gold-400">$69<span class="text-xs text-slate-500 font-normal">/mo</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 3 -->
+                <div class="reveal card-hover gradient-border group" style="transition-delay: 0.2s;">
+                    <div class="bg-slate-900 rounded-xl overflow-hidden">
+                        <div class="relative h-48 bg-gradient-to-br from-emerald-600/30 to-emerald-800/30 flex items-center justify-center overflow-hidden">
+                            <div class="absolute inset-0 math-grid-bg opacity-20"></div>
+                            <span class="text-6xl font-mono text-emerald-400/30 relative z-10">△</span>
+                            <div class="absolute top-4 right-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full" data-en="Exam Prep" data-kh="ត្រៀមប្រឡង">Exam Prep</div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded font-mono">Grade 12</span>
+                                <span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded">3 months</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2" data-en="Baccalaureate Exam Prep" data-kh="ត្រៀមប្រឡងបាក់ឌុប">Baccalaureate Exam Prep</h3>
+                            <p class="text-sm text-slate-400 mb-4" data-en="Intensive preparation for the national baccalaureate exam with practice tests and exam strategies." data-kh="ការត្រៀមខ្លាំងសម្រាប់ប្រឡងបាក់ឌុបជាតិជាមួយការធ្វើតេស្តអនុវត្ត និងយុទ្ធសាស្រ្តប្រឡង។">Intensive preparation for the national baccalaureate exam with practice tests and exam strategies.</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-star text-gold-400 text-sm"></i>
+                                    <span class="text-sm text-white font-semibold">4.9</span>
+                                    <span class="text-xs text-slate-500">(412)</span>
+                                </div>
+                                <span class="text-lg font-bold text-gold-400">$89<span class="text-xs text-slate-500 font-normal">/mo</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teaching Tools -->
+            <div class="reveal mt-16 bg-slate-900/50 border border-slate-800 rounded-2xl p-8">
+                <h3 class="text-xl font-bold text-white mb-6 text-center" data-en="Teaching Tools & Technology" data-kh="ឧបករណ៍ និងបច្ចេកវិទ្យាបង្រៀន">Teaching Tools & Technology</h3>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                    <div class="tooltip flex flex-col items-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-800 transition-colors" data-tooltip="Interactive Graphing">
+                        <i class="fas fa-chart-line text-2xl text-blue-400 mb-2"></i>
+                        <span class="text-xs text-slate-400 text-center">GeoGebra</span>
+                    </div>
+                    <div class="tooltip flex flex-col items-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-800 transition-colors" data-tooltip="Online Graphing Calculator">
+                        <i class="fas fa-square-root-alt text-2xl text-green-400 mb-2"></i>
+                        <span class="text-xs text-slate-400 text-center">Desmos</span>
+                    </div>
+                    <div class="tooltip flex flex-col items-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-800 transition-colors" data-tooltip="Mathematical Computing">
+                        <i class="fas fa-calculator text-2xl text-orange-400 mb-2"></i>
+                        <span class="text-xs text-slate-400 text-center">MATLAB</span>
+                    </div>
+                    <div class="tooltip flex flex-col items-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-800 transition-colors" data-tooltip="Programming for Math">
+                        <i class="fab fa-python text-2xl text-yellow-400 mb-2"></i>
+                        <span class="text-xs text-slate-400 text-center">Python</span>
+                    </div>
+                    <div class="tooltip flex flex-col items-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-800 transition-colors" data-tooltip="Document Typesetting">
+                        <i class="fas fa-file-alt text-2xl text-white mb-2"></i>
+                        <span class="text-xs text-slate-400 text-center">LaTeX</span>
+                    </div>
+                    <div class="tooltip flex flex-col items-center p-4 bg-slate-800/50 rounded-xl hover:bg-slate-800 transition-colors" data-tooltip="Online Whiteboard">
+                        <i class="fas fa-chalkboard text-2xl text-pink-400 mb-2"></i>
+                        <span class="text-xs text-slate-400 text-center">Miro</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-4xl mx-auto"></div>
+
+    <!-- Achievements Section -->
+    <section id="achievements" class="relative py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <div class="reveal inline-flex items-center space-x-2 bg-gold-500/10 border border-gold-500/20 rounded-full px-4 py-1.5 mb-6">
+                    <i class="fas fa-trophy text-gold-400 text-sm"></i>
+                    <span class="text-sm font-semibold text-gold-400" data-en="Recognition" data-kh="ការទទួលស្គាល់">Recognition</span>
+                </div>
+                <h2 class="reveal text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4" style="transition-delay: 0.1s;">
+                    <span data-en="Awards & " data-kh="ពានរង្វាន់ និង ">Awards & </span>
+                    <span class="bg-gradient-to-r from-gold-400 to-math-400 bg-clip-text text-transparent" data-en="Achievements" data-kh="សមិទ្ធផល">Achievements</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Achievement 1 -->
+                <div class="reveal card-hover text-center p-6 bg-slate-900/50 border border-slate-800 rounded-2xl">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 rounded-2xl flex items-center justify-center mb-4">
+                        <i class="fas fa-trophy text-3xl text-yellow-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-en="Best Math Teacher" data-kh="គ្រូគណិតឆ្នើម">Best Math Teacher</h3>
+                    <p class="text-sm text-slate-400 mb-2" data-en="National Teaching Award 2024" data-kh="ពានរង្វាន់គ្រូបង្រៀនជាតិ ២០២៤">National Teaching Award 2024</p>
+                    <span class="text-xs text-gold-400 font-mono">2024</span>
+                </div>
+
+                <!-- Achievement 2 -->
+                <div class="reveal card-hover text-center p-6 bg-slate-900/50 border border-slate-800 rounded-2xl" style="transition-delay: 0.1s;">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-blue-400/20 to-blue-600/20 rounded-2xl flex items-center justify-center mb-4">
+                        <i class="fas fa-medal text-3xl text-blue-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-en="Olympiad Coach" data-kh="គ្រូបង្វឹកអូឡាំព្យាត">Olympiad Coach</h3>
+                    <p class="text-sm text-slate-400 mb-2" data-en="5 Gold Medal Students" data-kh="សិស្សមេដាយមាស ៥ នាក់">5 Gold Medal Students</p>
+                    <span class="text-xs text-gold-400 font-mono">2020-2024</span>
+                </div>
+
+                <!-- Achievement 3 -->
+                <div class="reveal card-hover text-center p-6 bg-slate-900/50 border border-slate-800 rounded-2xl" style="transition-delay: 0.2s;">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-green-400/20 to-green-600/20 rounded-2xl flex items-center justify-center mb-4">
+                        <i class="fas fa-book text-3xl text-green-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-en="Published Author" data-kh="អ្នកនិពន្ធបោះពុម្ព">Published Author</h3>
+                    <p class="text-sm text-slate-400 mb-2" data-en="3 Math Textbooks Published" data-kh="សៀវភៅគណិតវិទ្យា ៣ ក្បាល">3 Math Textbooks Published</p>
+                    <span class="text-xs text-gold-400 font-mono">2019-2023</span>
+                </div>
+
+                <!-- Achievement 4 -->
+                <div class="reveal card-hover text-center p-6 bg-slate-900/50 border border-slate-800 rounded-2xl" style="transition-delay: 0.3s;">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-purple-400/20 to-purple-600/20 rounded-2xl flex items-center justify-center mb-4">
+                        <i class="fas fa-laptop-code text-3xl text-purple-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" data-en="Digital Innovation" data-kh="ច្នៃប្រឌិតឌីជីថល">Digital Innovation</h3>
+                    <p class="text-sm text-slate-400 mb-2" data-en="EdTech Innovation Award" data-kh="ពានរង្វាន់ច្នៃប្រឌិត EdTech">EdTech Innovation Award</p>
+                    <span class="text-xs text-gold-400 font-mono">2023</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-4xl mx-auto"></div>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="relative py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <div class="reveal inline-flex items-center space-x-2 bg-math-500/10 border border-math-500/20 rounded-full px-4 py-1.5 mb-6">
+                    <i class="fas fa-quote-left text-math-400 text-sm"></i>
+                    <span class="text-sm font-semibold text-math-400" data-en="Testimonials" data-kh="មតិអ្នករៀន">Testimonials</span>
+                </div>
+                <h2 class="reveal text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4" style="transition-delay: 0.1s;">
+                    <span data-en="What Students " data-kh="អ្វីដែលសិស្ស ">What Students </span>
+                    <span class="bg-gradient-to-r from-math-400 to-gold-400 bg-clip-text text-transparent" data-en="Say" data-kh="និយាយ">Say</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="reveal card-hover bg-slate-900/50 border border-slate-800 rounded-2xl p-6 relative">
+                    <div class="absolute top-4 right-4 text-math-500/10 text-5xl font-serif">"</div>
+                    <div class="flex items-center space-x-1 mb-4">
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-6" data-en="Mr. Sophea transformed my understanding of calculus completely. His step-by-step approach and patience made even the hardest problems feel solvable. I scored 95/100 on my final exam!" data-kh="លោកសុភាបានផ្លាស់ប្តូរការយល់ដឹងរបស់ខ្ញុំអំពីគណិតវិទ្យាទាំងស្រុង។ វិធីសាស្រ្តមួយជំហានម្តងៗ និងភាពអត់ធ្មត់របស់គាត់ធ្វើឱ្យបញ្ហាពិបាកបំផុតអាចដោះស្រាយបាន។ ខ្ញុំបាន ៩៥/១០០ ក្នុងការប្រឡងចុងក្រោយ!">
+                        Mr. Sophea transformed my understanding of calculus completely. His step-by-step approach and patience made even the hardest problems feel solvable. I scored 95/100 on my final exam!
+                    </p>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-math-500 to-math-600 rounded-full flex items-center justify-center text-white font-bold text-sm">DK</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white" data-en="Dara Khem" data-kh="ដារ៉ា ខេម">Dara Khem</div>
+                            <div class="text-xs text-slate-500" data-en="Grade 12 Student" data-kh="សិស្សថ្នាក់ទី១២">Grade 12 Student</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="reveal card-hover bg-slate-900/50 border border-slate-800 rounded-2xl p-6 relative" style="transition-delay: 0.1s;">
+                    <div class="absolute top-4 right-4 text-math-500/10 text-5xl font-serif">"</div>
+                    <div class="flex items-center space-x-1 mb-4">
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-6" data-en="My daughter used to hate math, but after joining Mr. Sophea's classes, she now loves it! She even participates in math competitions now. The interactive methods are incredible." data-kh="កូនស្រីរបស់ខ្ញុំធ្លាប់ស្អប់គណិតវិទ្យា ប៉ុន្តែបន្ទាប់ពីចូលរៀនជាមួយលោកសុភា ឥឡូវនាងចូលចិត្តវាហើយ! នាងថែមទាំងចូលរួមការប្រកួតគណិតវិទ្យាទៀតផង។ វិធីសាស្រ្តអន្តរកម្មគឺអស្ចារ្យណាស់។">
+                        My daughter used to hate math, but after joining Mr. Sophea's classes, she now loves it! She even participates in math competitions now. The interactive methods are incredible.
+                    </p>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-gold-500 to-gold-600 rounded-full flex items-center justify-center text-white font-bold text-sm">SP</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white" data-en="Sreypich Mom" data-kh="ស្រីពេជ្រ ម៉ម">Sreypich Mom</div>
+                            <div class="text-xs text-slate-500" data-en="Parent" data-kh="អាណាព្យាបាល">Parent</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="reveal card-hover bg-slate-900/50 border border-slate-800 rounded-2xl p-6 relative" style="transition-delay: 0.2s;">
+                    <div class="absolute top-4 right-4 text-math-500/10 text-5xl font-serif">"</div>
+                    <div class="flex items-center space-x-1 mb-4">
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star text-gold-400 text-sm"></i>
+                        <i class="fas fa-star-half-alt text-gold-400 text-sm"></i>
+                    </div>
+                    <p class="text-slate-300 text-sm leading-relaxed mb-6" data-en="The online classes are just as effective as in-person ones. Mr. Sophea uses GeoGebra and interactive tools that make visualizing complex concepts so much easier. Highly recommended!" data-kh="ការរៀនតាមអ៊ីនធឺណិតមានប្រសិទ្ធភាពដូចការរៀនផ្ទាល់ដែរ។ លោកសុភាប្រើ GeoGebra និងឧបករណ៍អន្តរកម្មដែលធ្វើឱ្យការមើលឃើញគំនិតស្មុគស្មាញងាយស្រួលជាងមុន។ ណែនាំខ្លាំង!">
+                        The online classes are just as effective as in-person ones. Mr. Sophea uses GeoGebra and interactive tools that make visualizing complex concepts so much easier. Highly recommended!
+                    </p>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">VR</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white" data-en="Vicheka Roth" data-kh="វិច្ឆិកា រដ្ឋ">Vicheka Roth</div>
+                            <div class="text-xs text-slate-500" data-en="University Student" data-kh="និស្សិតសាកលវិទ្យាល័យ">University Student</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-4xl mx-auto"></div>
+
+    <!-- Contact Section -->
+    <section id="contact" class="relative py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <div class="reveal inline-flex items-center space-x-2 bg-math-500/10 border border-math-500/20 rounded-full px-4 py-1.5 mb-6">
+                    <i class="fas fa-paper-plane text-math-400 text-sm"></i>
+                    <span class="text-sm font-semibold text-math-400" data-en="Get In Touch" data-kh="ទាក់ទងមកខ្ញុំ">Get In Touch</span>
+                </div>
+                <h2 class="reveal text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4" style="transition-delay: 0.1s;">
+                    <span data-en="Let's Start Your " data-kh="តោះចាប់ផ្តើម ">Let's Start Your </span>
+                    <span class="bg-gradient-to-r from-math-400 to-gold-400 bg-clip-text text-transparent" data-en="Math Journey" data-kh="ដំណើរគណិតវិទ្យារបស់អ្នក">Math Journey</span>
+                </h2>
+                <p class="reveal text-slate-400 max-w-2xl mx-auto text-lg" style="transition-delay: 0.2s;" data-en="Ready to excel in mathematics? Reach out today for a free consultation and personalized learning plan." data-kh="ត្រៀមខ្លួនរួចរាល់ដើម្បីឆ្នើមក្នុងគណិតវិទ្យា? ទាក់ទងមកថ្ងៃនេះសម្រាប់ការពិគ្រោះយោបល់ឥតគិតថ្លៃ និងផែនការរៀនសូត្រផ្ទាល់ខ្លួន។">
+                    Ready to excel in mathematics? Reach out today for a free consultation and personalized learning plan.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-5 gap-12">
+                <!-- Contact Info -->
+                <div class="reveal-left lg:col-span-2 space-y-6">
+                    <!-- Contact Card 1 -->
+                    <div class="card-hover flex items-start space-x-4 p-5 bg-slate-900/50 border border-slate-800 rounded-xl">
+                        <div class="w-12 h-12 bg-gradient-to-br from-math-500/20 to-math-600/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-phone text-math-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-white mb-1" data-en="Phone" data-kh="ទូរស័ព្ទ">Phone</h4>
+                            <p class="text-slate-400 text-sm">+855 16 445 740</p>
+                            <p class="text-slate-400 text-sm">+855 XX XXX XXX</p>
+                        </div>
+                    </div>
+
+                    <!-- Contact Card 2 -->
+                    <div class="card-hover flex items-start space-x-4 p-5 bg-slate-900/50 border border-slate-800 rounded-xl">
+                        <div class="w-12 h-12 bg-gradient-to-br from-gold-500/20 to-gold-600/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-envelope text-gold-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-white mb-1">Email</h4>
+                            <p class="text-slate-400 text-sm">soeungsreypich.hotline@gmail.com</p>
+                            <p class="text-slate-400 text-sm">soeungsreypich963@gmail.com</p>
+                        </div>
+                    </div>
+
+                    <!-- Contact Card 3 -->
+                    <div class="card-hover flex items-start space-x-4 p-5 bg-slate-900/50 border border-slate-800 rounded-xl">
+                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-map-marker-alt text-emerald-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-white mb-1" data-en="Location" data-kh="ទីតាំង">Location</h4>
+                            <p class="text-slate-400 text-sm" data-en="#123, Street 456, Phnom Penh, Cambodia" data-kh="#១២៣ ផ្លូវ៤៥៦ ភ្នំពេញ កម្ពុជា">#123, Street 456, Phnom Penh, Cambodia</p>
+                        </div>
+                    </div>
+
+                    <!-- Contact Card 4 -->
+                    <div class="card-hover flex items-start space-x-4 p-5 bg-slate-900/50 border border-slate-800 rounded-xl">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-clock text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-white mb-1" data-en="Working Hours" data-kh="ម៉ោងធ្វើការ">Working Hours</h4>
+                            <p class="text-slate-400 text-sm" data-en="Mon - Sat: 8:00 AM - 8:00 PM" data-kh="ច័ន្ទ - អាទិត្យ: ៨:០០ ព្រឹក - ៨:០០ ល្ងាច">Mon - Sat: 8:00 AM - 8:00 PM</p>
+                            <p class="text-slate-400 text-sm" data-en="Sunday: By Appointment" data-kh="អាទិត្យ: តាមការណាត់ជួប">Sunday: By Appointment</p>
+                        </div>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="flex space-x-3 pt-4">
+                        <a href="#" class="tooltip w-12 h-12 bg-slate-800 hover:bg-math-600 rounded-xl flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300" data-tooltip="Facebook">
+                            <i class="fab fa-facebook-f text-lg"></i>
+                        </a>
+                        <a href="#" class="tooltip w-12 h-12 bg-slate-800 hover:bg-blue-500 rounded-xl flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300" data-tooltip="Telegram">
+                            <i class="fab fa-telegram text-lg"></i>
+                        </a>
+                        <a href="#" class="tooltip w-12 h-12 bg-slate-800 hover:bg-red-600 rounded-xl flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300" data-tooltip="YouTube">
+                            <i class="fab fa-youtube text-lg"></i>
+                        </a>
+                        <a href="#" class="tooltip w-12 h-12 bg-slate-800 hover:bg-pink-600 rounded-xl flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300" data-tooltip="TikTok">
+                            <i class="fab fa-tiktok text-lg"></i>
+                        </a>
+                        <a href="#" class="tooltip w-12 h-12 bg-slate-800 hover:bg-sky-500 rounded-xl flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300" data-tooltip="LinkedIn">
+                            <i class="fab fa-linkedin-in text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="reveal-right lg:col-span-3">
+                    <form id="contact-form" class="bg-slate-900/50 border border-slate-800 rounded-2xl p-8">
+                        <div class="grid sm:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2" data-en="Full Name" data-kh="ឈ្មោះពេញ">Full Name</label>
+                                <input type="text" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-math-500 focus:ring-1 focus:ring-math-500 transition-all" data-en-placeholder="Your name" data-kh-placeholder="ឈ្មោះរបស់អ្នក" placeholder="Your name" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                                <input type="email" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-math-500 focus:ring-1 focus:ring-math-500 transition-all" placeholder="your@email.com" required>
+                            </div>
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2" data-en="Phone Number" data-kh="លេខទូរស័ព្ទ">Phone Number</label>
+                                <input type="tel" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-math-500 focus:ring-1 focus:ring-math-500 transition-all" data-en-placeholder="+855 XX XXX XXXX" data-kh-placeholder="+៨៥៥ XX XXX XXXX" placeholder="+855 XX XXX XXXX">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2" data-en="Subject" data-kh="ប្រធានបទ">Subject</label>
+                                <select class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-math-500 focus:ring-1 focus:ring-math-500 transition-all appearance-none cursor-pointer">
+                                    <option value="" class="bg-slate-800" data-en="Select a course" data-kh="ជ្រើសរើសវគ្គសិក្សា">Select a course</option>
+                                    <option value="foundation" class="bg-slate-800" data-en="Foundation Mathematics" data-kh="គណិតវិទ្យាមូលដ្ឋាន">Foundation Mathematics</option>
+                                    <option value="calculus" class="bg-slate-800" data-en="Advanced Calculus" data-kh="គណិតវិទ្យាកម្រិតខ្ពស់">Advanced Calculus</option>
+                                    <option value="exam-prep" class="bg-slate-800" data-en="Exam Preparation" data-kh="ការត្រៀមប្រឡង">Exam Preparation</option>
+                                    <option value="private" class="bg-slate-800" data-en="Private Tutoring" data-kh="រៀនជាមួយគ្រូផ្ទាល់ខ្លួន">Private Tutoring</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-slate-300 mb-2" data-en="Message" data-kh="សារ">Message</label>
+                            <textarea rows="5" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-math-500 focus:ring-1 focus:ring-math-500 transition-all resize-none" data-en-placeholder="Tell me about your math goals..." data-kh-placeholder="ប្រាប់ខ្ញុំអំពីគោលដៅគណិតវិទ្យារបស់អ្នក..." placeholder="Tell me about your math goals..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-particle w-full bg-gradient-to-r from-math-600 to-math-500 hover:from-math-500 hover:to-gold-500 text-white py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-math-600/25 hover:shadow-math-500/40 flex items-center justify-center space-x-2">
+                            <i class="fas fa-paper-plane"></i>
+                            <span data-en="Send Message" data-kh="ផ្ញើសារ">Send Message</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative bg-slate-900/80 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <!-- Brand -->
+                <div>
+                    <a href="#home" class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-math-600 to-gold-500 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">π</span>
+                        </div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-math-400 to-gold-400 bg-clip-text text-transparent">SREYPICH MATH</span>
+                    </a>
+                    <p class="text-sm text-slate-400 leading-relaxed" data-en="Empowering students to master mathematics through innovative teaching methods and personalized learning experiences." data-kh="ផ្តល់អំណាចដល់សិស្សដើម្បីចេះគណិតវិទ្យាតាមរយៈវិធីសាស្រ្តបង្រៀនច្នៃប្រឌិត និងបទពិសោធន៍រៀនសូត្រផ្ទាល់ខ្លួន។">
+                        Empowering students to master mathematics through innovative teaching methods and personalized learning experiences.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider" data-en="Quick Links" data-kh="តំណភ្ជាប់រហ័ស">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#about" class="text-sm text-slate-400 hover:text-math-400 transition-colors" data-en="About Me" data-kh="អំពីខ្ញុំ">About Me</a></li>
+                        <li><a href="#courses" class="text-sm text-slate-400 hover:text-math-400 transition-colors" data-en="Courses" data-kh="វគ្គសិក្សា">Courses</a></li>
+                        <li><a href="#achievements" class="text-sm text-slate-400 hover:text-math-400 transition-colors" data-en="Achievements" data-kh="សមិទ្ធផល">Achievements</a></li>
+                        <li><a href="#testimonials" class="text-sm text-slate-400 hover:text-math-400 transition-colors" data-en="Reviews" data-kh="មតិ">Reviews</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider" data-en="Stay Updated" data-kh="ទទួលបានព័ត៌មានថ្មី">Stay Updated</h4>
+                    <p class="text-sm text-slate-400 mb-4" data-en="Get weekly math tips and study resources." data-kh="ទទួលបានគន្លឹះគណិតវិទ្យា និងធនធានសិក្សារាល់សប្តាហ៍។">Get weekly math tips and study resources.</p>
+                    <div class="flex">
+                        <input type="email" class="flex-1 bg-slate-800/50 border border-slate-700 rounded-l-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-math-500 transition-all" data-en-placeholder="Your email" data-kh-placeholder="អ៊ីមែលរបស់អ្នក" placeholder="Your email">
+                        <button class="bg-gradient-to-r from-math-600 to-math-500 hover:from-math-500 hover:to-math-400 text-white px-5 py-2.5 rounded-r-xl text-sm font-semibold transition-all">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between">
+                <p class="text-sm text-slate-500">
+                    © 2026 Sreypich Math. <span data-en="All rights reserved." data-kh="រក្សាសិទ្ធិគ្រប់យ៉ាង។">All rights reserved.</span>
+                </p>
+                <p class="text-sm text-slate-500 mt-2 md:mt-0">
+                    <span data-en="Made with" data-kh="បង្កើតដោយ">Made with</span>
+                    <i class="fas fa-heart text-red-500 mx-1"></i>
+                    <span data-en="for Mathematics Education" data-kh="សម្រាប់ការអប់រំគណិតវិទ្យា">for Mathematics Education</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-6 right-6 w-12 h-12 bg-gradient-to-r from-math-600 to-math-500 hover:from-math-500 hover:to-gold-500 text-white rounded-full shadow-lg shadow-math-600/30 flex items-center justify-center transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-50">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    <script src="script.js"></script>
+</body>
+</html>
